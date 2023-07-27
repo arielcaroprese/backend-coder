@@ -1,4 +1,5 @@
-const fs = require('fs')
+
+import fs from 'fs'
 
 class ProductManager {
     constructor(path){
@@ -41,7 +42,7 @@ class ProductManager {
       const productosActuales = await this.getProducts()
       const idExists = productosActuales.find((prod) => prod.id === id);
       if (!idExists) {
-        console.log("El producto buscado no existe.");
+        return "El producto buscado no existe";
       } else {
         return idExists;
       }
@@ -91,7 +92,7 @@ const productoNuevo = {
 
 
 
-async function prueba() {
+/* async function prueba() {
 
   const productManager = new ProductManager('Products.json')
 
@@ -107,9 +108,13 @@ async function prueba() {
 
   console.log(await productManager.getProductsById(1))
 
-  await productManager.deleteProduct(1)
+
 
   console.log(await productManager.getProductsById(1))
 }
 
-prueba()
+prueba() */
+
+const productsManager = new ProductManager('Products.json')
+
+export default productsManager
