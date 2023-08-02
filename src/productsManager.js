@@ -6,11 +6,12 @@ class ProductManager {
         this.path = path
     }
 
-    async getProducts() {
+    async getProducts(limit) {
         try {
             if (fs.existsSync(this.path)) {
-                const infoArchivo = await fs.promises.readFile(this.path, 'utf-8')
-                return JSON.parse(infoArchivo)
+                const productsFile = await fs.promises.readFile(this.path, 'utf-8')
+                const products = JSON.parse(productsFile)
+                return products.slice(0,limit)
             } else {
                 return []
             }
@@ -19,7 +20,7 @@ class ProductManager {
         }
     }
  
-    async addProduct(obj) {
+    async addProduct(productData) {
         try {
           const productosActuales = await this.getProducts()
           let id
@@ -28,9 +29,10 @@ class ProductManager {
           } else {
             id = productosActuales[productosActuales.length - 1].id + 1
           }
-          productosActuales.push({...obj, id})
-          console.log("Producto agregado correctamente")
+          const newProduct = {...productData, id}
+          productosActuales.push(newProduct)
           await fs.promises.writeFile(this.path, JSON.stringify(productosActuales))
+          return newProduct
         } catch (error) {
           console.log(error)
           return error
@@ -51,16 +53,18 @@ class ProductManager {
     }
     }
 
-    async updateProduct(id, obj) {
+    async updateProduct(id, dataUpdate) {
       try {
         const productosActuales = await this.getProducts()
         const productosIndex = productosActuales.findIndex((u) => u.id === id)
         if (productosIndex === -1) {
           return 'No hay un producto con ese id'
         }
-        const usuario = productosActuales[productosIndex]
-        productosActuales[productosIndex] = { ...usuario, ...obj }
+        const productoActual = productosActuales[productosIndex]
+        const updatedProduct = { ...productoActual, ...dataUpdate }
+        productosActuales[productosIndex] = updatedProduct
         await fs.promises.writeFile(this.path, JSON.stringify(productosActuales))
+        return updatedProduct
       } catch (error) {
         return error
       }
@@ -68,8 +72,8 @@ class ProductManager {
 
     async deleteProduct(id) {
       try {
-        const productosActuales = await this.getProducts()
-        const productosNuevo = productosActuales.filter((u) => u.id !== id)
+        const productosActual = await this.getProducts()
+        const productosNuevo = productosActual.filter((p) => p.id !== id)
         await fs.promises.writeFile(this.path, JSON.stringify(productosNuevo)
         )
       } catch (error) {
