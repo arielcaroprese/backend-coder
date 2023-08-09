@@ -124,6 +124,6 @@ const productoNuevo = {
 
 prueba() */
 
-const cartsManager = new CartManager('Carts.json')
+const cartsManager = new CartManager('src/Carts.json')
 
 export default cartsManager

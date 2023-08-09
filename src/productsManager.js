@@ -81,44 +81,7 @@ class ProductManager {
       }
     }
 }
-  
 
-// Prueba
-
-const productoNuevo = {
-  title: 'producto prueba',
-  description: 'Este es un producto prueba',
-  price: 200,
-  thumbnail: 'Sin imagen',
-  code: 'abc123',
-  stock: 25
-}
-
-
-
-/* async function prueba() {
-
-  const productManager = new ProductManager('Products.json')
-
-  console.log(await productManager.getProducts())
-
-  await productManager.addProduct(productoNuevo)
-
-  console.log(await productManager.getProducts())
-
-  console.log(await productManager.getProductsById(1))
-
-  await productManager.updateProduct(1,{title: 'Producto actualizado'})
-
-  console.log(await productManager.getProductsById(1))
-
-
-
-  console.log(await productManager.getProductsById(1))
-}
-
-prueba() */
-
-const productsManager = new ProductManager('Products.json')
+const productsManager = new ProductManager('src/Products.json')
 
 export default productsManager
