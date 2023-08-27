@@ -1,25 +1,31 @@
 import { Router } from "express"
-import productsManager from '../productsManager.js';
+import productsMongo from '../dao/managers/products/productsMongo.js';
 
 const router = Router()
 
 router.get('/', async (req, res) => {
     const {limit} = req.query
     try {
-        
-        const products = await productsManager.getProducts(limit)
-        res.status(200).json({ message: 'Products', products})
+        const products = await productsMongo.findAll(limit)
+        if(products.length){
+            res.status(200).json({ message: 'Products', products})
+        } else {
+            res.status(200).json({ message: 'No users found'})
+        }
     } catch (error) {
         res.status(500).json({error})
-        console.log(error)
     }
 })
 
-router.get('/:idProduct', async (req, res) => {
-    const {idProduct} = req.params
+router.get('/:id', async (req, res) => {
+    const {id} = req.params
     try {
-        const product = await productsManager.getProductsById(+idProduct)
-        res.status(200).json({ message: 'Products', product})
+        const product = await productsMongo.findById(id)
+        if (!product) {
+            res.status(400).json({ message: 'Invalid ID'})
+        } else {
+            res.status(200).json({ message: 'Products', product})
+        }
     } catch (error) {
         res.status(500).json({error})
     }
@@ -28,28 +34,28 @@ router.get('/:idProduct', async (req, res) => {
 router.post('/', async (req, res) => {
     const newProduct = req.body
     try {
-        const addedProduct = await productsManager.addProduct(newProduct)
+        const addedProduct = await productsMongo.createOne(newProduct)
         res.status(200).json({ message: 'Product added', addedProduct})
     } catch (error) {
-        
+        res.status(500).json({error})
     }
 })
 
-router.put('/:idProduct', async (req, res) => {
-    const {idProduct} = req.params
+router.put('/:id', async (req, res) => {
+    const {id} = req.params
     const updatedInfo = req.body
     try {
-        const updatedProduct = await productsManager.updateProduct(+idProduct, updatedInfo)
+        const updatedProduct = await productsMongo.updateOne(id, updatedInfo)
         res.status(200).json({ message: 'Product updated', updatedProduct})
     } catch (error) {
         res.status(500).json({error})
     }
 })
 
-router.delete('/:idProduct', async (req, res) => {
-    const {idProduct} = req.params
+router.delete('/:id', async (req, res) => {
+    const {id} = req.params
     try {
-        await productsManager.deleteProduct(+idProduct)
+        await productsMongo.deleteOne(id)
         res.status(200).json({ message: 'Product deleted'})
     } catch (error) {
         res.status(500).json({error})

@@ -3,15 +3,19 @@ import {__dirname} from './utils.js';
 import productsRouter from './routes/products.router.js';
 import cartsRouter from './routes/carts.router.js';
 import viewsRouter from './routes/views.router.js';
-import handlebars from 'express-handlebars'
-import {Server} from 'socket.io'
-import productsManager from './productsManager.js';
+import handlebars from 'express-handlebars';
+import {Server} from 'socket.io';
+import productsManager from './dao/managers/products/productsManagerFile.js';
+
+import './dao/db/dbConfig.js';
 
 
 const app = express();
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
+
+// Public
 app.use(express.static(__dirname+'/public'))
 
 // Handlebars
