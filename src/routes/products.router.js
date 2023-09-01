@@ -4,14 +4,10 @@ import productsMongo from '../dao/managers/products/productsMongo.js';
 const router = Router()
 
 router.get('/', async (req, res) => {
-    const {limit} = req.query
+    const {limit, page, sortByPrice, ...query} = req.query
     try {
-        const products = await productsMongo.findAll(limit)
-        if(products.length){
-            res.status(200).json({ message: 'Products', products})
-        } else {
-            res.status(200).json({ message: 'No users found'})
-        }
+        const products = await productsMongo.findAll(limit, page, sortByPrice, query)
+        res.status(200).json({products})
     } catch (error) {
         res.status(500).json({error})
     }

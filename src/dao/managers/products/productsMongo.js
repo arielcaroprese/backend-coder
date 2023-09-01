@@ -2,10 +2,23 @@ import { productsModel } from "../../db/models/products.model.js";
 
 class ProductsMongo {
 
-    async findAll(limit){
+    async findAll(limit=10, page=1, sortByPrice="ASC", query=""){
+        console.log(`limit = ${limit}, page = ${page}, sortBtPrice = ${sortByPrice}, query = ${query}`);
         try {
-            const products = await productsModel.find({}).limit(limit)
-            return products
+            const result = await productsModel.paginate(query, {limit, page, sort:{price: sortByPrice}})
+            const productsData = {
+                status: "Success",
+                payload: result.docs,
+                totalPages: result.totalPages,
+                prevPage: result.prevPage,
+                nextPage: result.nextPage,
+                page: result.page,
+                hasPrevPage: result.hasPrevPage,
+                hasNextPage: result.hasNextPage,
+                prevLink: result.hasPrevPage ? `http://localhost:8080/api/products/?page=${result.prevPage}`: null,
+                nextLink: result.hasNextPage ? `http://localhost:8080/api/products/?page=${result.nextPage}`: null
+            }
+            return productsData
         } catch (error) {
             return error
         }

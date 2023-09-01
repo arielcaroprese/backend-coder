@@ -31,7 +31,6 @@ class CartsMongo {
 
     async addToCart(idCart, idProduct){
         try {
-            const cart = await cartsModel.findById(idCart)
             const exists = cart.products.some(item => item.product == idProduct)
             if(exists) {
                 const cartUpdate = await cartsModel.updateOne({ _id: idCart, "products.product": idProduct}, 
@@ -54,9 +53,59 @@ class CartsMongo {
         }
     }
 
+    async updateCart(idCart, productsArray){
+        console.log(productsArray);
+        try {
+            const cartUpdate = await cartsModel.updateOne(
+                { _id: idCart }, 
+                { $set: {products: productsArray}}
+            )
+            return cartUpdate
+        } catch (error) {
+            return error
+        }
+    }
+
+    async updateQuantity(idCart, idProduct, quantity){
+        try {
+            const cart = await cartsModel.findById(idCart)
+            const cartUpdate = await cartsModel.updateOne({ _id: idCart, "products.product": idProduct},
+            {$set: {
+                "products.$.quantity": quantity 
+            }})
+            return cartUpdate
+        } catch (error) {
+            return error
+        }
+    }
+
+    async deleteCartItems(idCart, idProduct){
+        try {
+            const productDelete = await cartsModel.updateOne(
+                { _id: idCart }, 
+                { $pull: { products: {product: idProduct}}}
+            )
+            return productDelete
+        } catch (error) {
+            return error
+        }
+    }
+
+    async deleteAllCartItems(idCart){
+        try {
+            const productDelete = await cartsModel.updateOne(
+                { _id: idCart }, 
+                { $set: {products: []}}
+            )
+            return productDelete
+        } catch (error) {
+            return error
+        }
+    }
+
     async getCartItems(idCart){
         try {
-            const cart = await cartsModel.find({_id : idCart}, {'products': 1, '_id': 0})
+            const cart = await cartsModel.find({_id : idCart}, {'products': 1, '_id': 0}).populate('products.product')
             return cart
         } catch (error) {
             return error
