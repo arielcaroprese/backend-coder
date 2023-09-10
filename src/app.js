@@ -3,9 +3,14 @@ import {__dirname} from './utils.js';
 import productsRouter from './routes/products.router.js';
 import cartsRouter from './routes/carts.router.js';
 import viewsRouter from './routes/views.router.js';
+import usersRouter from './routes/users.router.js';
 import handlebars from 'express-handlebars';
 import {Server} from 'socket.io';
 import productsManager from './dao/managers/products/productsManagerFile.js';
+
+import cookieParser from 'cookie-parser'
+import session from 'express-session'
+import mongoStore from 'connect-mongo'
 
 import './dao/db/dbConfig.js';
 
@@ -23,21 +28,28 @@ app.engine('handlebars', handlebars.engine())
 app.set('views', __dirname+'/views')
 app.set('view engine', 'handlebars')
 
+// Cookies
+app.use(cookieParser('secretKeyCookies'))
+
+
+// Sessions
+app.use(session({
+    store: new mongoStore({
+        mongoUrl: 'mongodb+srv://arielcaroprese:Icosaedro27@cluster0.vdrhniv.mongodb.net/backend-coder?retryWrites=true&w=majority',
+        ttl: 180,
+    }),
+    secret: 'secretSession',
+    cookie: {maxAge: 180000},
+    resave: false,
+    saveUninitialized: false
+}))
+
 // Routes
 app.use('/api/products', productsRouter)
 app.use('/api/carts', cartsRouter)
-app.use('/api/views', viewsRouter)
+app.use('/api/sessions', usersRouter)
+app.use('', viewsRouter)
 
-// Home
-
-app.get('', async (req,res) => {
-    try {
-        const products = await productsManager.getProducts()
-        res.render('home', {products})
-    } catch (error) {
-        res.status(500).json({error})
-    }
-})
 
 // RealTimeProducts
 

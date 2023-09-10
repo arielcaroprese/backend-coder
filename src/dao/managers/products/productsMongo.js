@@ -5,7 +5,7 @@ class ProductsMongo {
     async findAll(limit=10, page=1, sortByPrice="ASC", query=""){
         console.log(`limit = ${limit}, page = ${page}, sortBtPrice = ${sortByPrice}, query = ${query}`);
         try {
-            const result = await productsModel.paginate(query, {limit, page, sort:{price: sortByPrice}})
+            const result = await productsModel.paginate(query, {limit, page, sort:{price: sortByPrice}, lean: true})
             const productsData = {
                 status: "Success",
                 payload: result.docs,
@@ -35,7 +35,7 @@ class ProductsMongo {
 
     async findById(id){
         try {
-            const product = await productsModel.findById(id)
+            const product = await productsModel.findById(id).lean()
             return product
         } catch (error) {
             return error

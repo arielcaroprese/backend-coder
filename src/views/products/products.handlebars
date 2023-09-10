@@ -1,0 +1,26 @@
+<div>
+    {{#if user}}
+        <h3>Bienvenido {{user.first_name}} {{user.last_name}}!</h3>
+        <p>Email: {{user.email}}</p>
+        <p>Edad: {{user.age}}</p>
+        <p>Rol: {{user.role}}</p>
+        <a href="/api/sessions/logout"><button>Cerrar sesión</button></a>
+    {{else}}
+    <a href="/login">Iniciar sesión</a>
+    {{/if}}
+
+</div>
+
+<h1>Productos</h1>
+
+{{#each products.payload}}
+<div>
+    <h2>{{title}}</h2>
+    <p>{{description}}</p>
+    <ul>
+        <li>Precio: {{price}}</li>
+        <li>Thumbnail: {{thumbnail}}</li>
+    </ul>
+    <a href="/product/{{id}}"><button>Ver detalle</button></a>
+</div>
+{{/each}}
