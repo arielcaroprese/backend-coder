@@ -7,10 +7,11 @@ import usersRouter from './routes/users.router.js';
 import handlebars from 'express-handlebars';
 import {Server} from 'socket.io';
 import productsManager from './dao/managers/products/productsManagerFile.js';
-
 import cookieParser from 'cookie-parser'
 import session from 'express-session'
 import mongoStore from 'connect-mongo'
+import passport from 'passport'
+import './passport/passportStrategies.js'
 
 import './dao/db/dbConfig.js';
 
@@ -43,6 +44,10 @@ app.use(session({
     resave: false,
     saveUninitialized: false
 }))
+
+// passport
+app.use(passport.initialize())
+app.use(passport.session())
 
 // Routes
 app.use('/api/products', productsRouter)
