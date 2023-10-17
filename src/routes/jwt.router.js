@@ -31,10 +31,8 @@ const router = Router()
 
 router.post('/', passport.authenticate('local', {session: false, failureRedirect: '/login'},), (req, res) => {
     try {
-        console.log(req.user)
         const token = generateToken(req.user)
-        console.log(token)
-        res.status(200).cookie('token', token).json({message:'Token generated', token})
+        res.status(200).cookie('token', token).redirect('/')
     } catch (error) {
         console.log(error)
     }
