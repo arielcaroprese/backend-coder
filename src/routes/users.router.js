@@ -55,9 +55,13 @@ router.get('/logout', (req, res) => {
 
 router.get('/githubSignup', passport.authenticate('github', { scope: [ 'user:email'] }))
 
-router.get('/github', passport.authenticate('github'), async(req, res) => {
-    console.log(req)
-    res.send('Bienvenido desde GitHub')
+router.get('/github', passport.authenticate('github', {
+    failureRedirect: '/login'
+}), (req,res) => {
+    console.log(req.user)
+    req.session['username'] = req.user.username
+    req.session['role'] = req.user.role
+    res.send('Todo joia')
 })
 
 export default router

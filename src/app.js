@@ -12,6 +12,7 @@ import session from 'express-session'
 import mongoStore from 'connect-mongo'
 import passport from 'passport'
 import './passport/passportStrategies.js'
+import jwtRouter from './routes/jwt.router.js'
 
 import './dao/db/dbConfig.js';
 
@@ -32,27 +33,14 @@ app.set('view engine', 'handlebars')
 // Cookies
 app.use(cookieParser('secretKeyCookies'))
 
-
-// Sessions
-app.use(session({
-    store: new mongoStore({
-        mongoUrl: 'mongodb+srv://arielcaroprese:Icosaedro27@cluster0.vdrhniv.mongodb.net/backend-coder?retryWrites=true&w=majority',
-        ttl: 180,
-    }),
-    secret: 'secretSession',
-    cookie: {maxAge: 180000},
-    resave: false,
-    saveUninitialized: false
-}))
-
 // passport
 app.use(passport.initialize())
-app.use(passport.session())
 
 // Routes
 app.use('/api/products', productsRouter)
 app.use('/api/carts', cartsRouter)
 app.use('/api/sessions', usersRouter)
+app.use('/api/jwt', jwtRouter)
 app.use('', viewsRouter)
 
 

@@ -2,8 +2,11 @@ import passport from 'passport';
 import { usersModel } from '../dao/db/models/users.model.js'
 import { Strategy as LocalStrategy} from 'passport-local'
 import { Strategy as GitHubStrategy} from 'passport-github2'
+import { ExtractJwt, Strategy as JWTStrategy } from 'passport-jwt'
 import { usersManager } from '../dao/managers/users/UsersManager.js'
 import { compareData } from '../utils.js'
+
+const JWT_SECRET_KEY = 'secretJWT'
 
 passport.use('local', new LocalStrategy(
     async function( username, password, done){
@@ -13,8 +16,9 @@ passport.use('local', new LocalStrategy(
                     return done(null, false)
                 }
                 const isPasswordValid = await compareData(password, userDB.password)
-                if(!isPasswordValid)
+                if(!isPasswordValid){
                     return done(null, false)
+                }
                 return done(null, userDB)
         } catch (error) {
             done(error)
@@ -25,7 +29,7 @@ passport.use('local', new LocalStrategy(
 passport.use('github', new GitHubStrategy({
     clientID: 'Iv1.c96410c580591937',
     clientSecret: 'a85cb2c7a53796b26c1bbace3bed4282be8b4db8',
-    callbackURL: 'http://localhost:8080/api/sessions/github'
+    callbackURL: 'http://localhost:8080/api/jwt/github'
 },
 async function(accessToken, refreshToken, profile, done) {
     try {
@@ -43,7 +47,6 @@ async function(accessToken, refreshToken, profile, done) {
         } else {
             return done(null, userDB)
         }
-
     } catch (error) {
         done(error)
     }
@@ -63,3 +66,15 @@ passport.deserializeUser(async (id, done) => {
         done(error)
     }
 })
+
+const cookieExtractor = (req) => {
+    return req.cookies.token
+}
+
+passport.use('jwt', new JWTStrategy({
+    jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
+    secretOrKey: JWT_SECRET_KEY
+}, async(jwt_payload, done) => {
+    console.log('jwt_payload', jwt_payload)
+    done(null, jwt_payload)
+}))

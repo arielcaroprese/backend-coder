@@ -4,12 +4,13 @@ import productsMongo from '../dao/managers/products/productsMongo.js';
 const router = Router();
 
 const publicAccess = (req, res, next) => {
-    if(req.session.user) return res.redirect('/');
+    if(req.session) return res.redirect('/');
     next();
 }
 
 const privateAccess = (req, res, next) => {
-    if(!req.session.user) return res.redirect('/login');
+    console.log(req.session)
+    if(!req.session) return res.redirect('/login');
     next();
 }
 
@@ -28,10 +29,10 @@ router.get('/', (req,res) => {
 })
 */
 
-router.get('', privateAccess, async (req,res) => {
+router.get('', publicAccess, async (req,res) => {
     try {
         const products = await productsMongo.findAll()
-        res.render('products/products', {products, user: req.session.user})
+        res.render('products/products', {products})
     } catch (error) {
         res.status(500).json({error})
     }
